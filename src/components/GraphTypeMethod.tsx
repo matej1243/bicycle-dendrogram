@@ -13,7 +13,7 @@ const GraphTypeMethod = ({
                 <h2>Graph Type:</h2>
                 <small>Current: {graphType}</small>
                 <button onClick={() => setGraphType('simple')}>Simple</button>
-                {/* <button onClick={() => setGraphType('rect')}>Rectangular</button> */}
+                <button onClick={() => setGraphType('rect')}>Rectangular</button>
                 <button onClick={() => setGraphType('circle')}>Circular</button>
             </div>
 

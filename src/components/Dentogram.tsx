@@ -106,12 +106,12 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
             svg.selectAll('path')
                 .data(root.descendants().slice(1))
                 .join('path')
-                .attr(
-                    'd',
-                    (d: any) =>
-                        `M${d.y},${d.x}C${d.parent.y + inflection.a},${d.x} ${d.parent.y + inflection.b},${
-                            d.parent.x
-                        } ${d.parent.y},${d.parent.x}`
+                .attr('d', (d: any) =>
+                    graphType === 'simple'
+                        ? `M${d.y},${d.x}C${d.parent.y + inflection.a},${d.x} ${d.parent.y + inflection.b},${
+                              d.parent.x
+                          } ${d.parent.y},${d.parent.x}`
+                        : `M${d.parent.y},${d.parent.x}H${d.y / 1.1}V${d.x}H${d.y}`
                 )
                 .style('fill', 'none')
                 .attr('stroke', '#ccc');
