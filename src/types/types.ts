@@ -6,7 +6,7 @@ export type InputData = {
     Payment_Method: string;
 };
 
-export interface IDentogram {
+export interface IDedrogram {
     inputData: InputData[];
 }
 

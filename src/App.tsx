@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Dentogram from './components/Dentogram';
+import Dendrogram from './components/Dentogram';
 import './App.css';
 
 import { data as incomingData } from './data/data';
@@ -14,7 +14,7 @@ const App = (): React.ReactElement => {
 
     return (
         <div>
-            <Dentogram inputData={data} />
+            <Dendrogram inputData={data} />
         </div>
     );
 };

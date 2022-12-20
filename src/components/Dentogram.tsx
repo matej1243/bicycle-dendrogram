@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { DataParams, GraphType, IDentogram, InputData, RenderMethod, TParams } from '../types/types';
+import { DataParams, GraphType, IDedrogram, InputData, RenderMethod, TParams } from '../types/types';
 import * as d3 from 'd3';
 
 const combineKeys = (levels: string[], keys: string[]) => levels.concat(keys.filter(item => levels.indexOf(item) < 0));
@@ -43,7 +43,7 @@ const formatData = (data: InputData[], params?: DataParams) => {
     return root;
 };
 
-const Dentogram = ({ inputData }: IDentogram): React.ReactElement => {
+const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
     const dentogramRef = useRef(null);
 
     const [graphType, setGraphType] = useState<GraphType>('simple');
@@ -310,4 +310,4 @@ const Dentogram = ({ inputData }: IDentogram): React.ReactElement => {
     );
 };
 
-export default Dentogram;
+export default Dendrogram;
