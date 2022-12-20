@@ -69,3 +69,8 @@ export type TFilter = {
     operator: TOperator;
     value: string;
 };
+
+export interface INewLine {
+    data: InputData[];
+    setData: React.Dispatch<React.SetStateAction<InputData[]>>;
+}

@@ -157,7 +157,7 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
             <hr />
             <br />
 
-            <NewLine />
+            <NewLine data={data} setData={setData} />
 
             <hr />
 

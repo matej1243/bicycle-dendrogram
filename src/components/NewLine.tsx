@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
+import { INewLine, InputData } from '../types/types';
 
-const NewLine = (): React.ReactElement => {
-    const defaultNewItem = {
-        merchant: '',
-        country: '',
-        city: '',
-        medium: '',
-        method: ''
+const NewLine = ({ data, setData }: INewLine): React.ReactElement => {
+    const defaultNewItem: InputData = {
+        Merchant: '',
+        Country: '',
+        City: '',
+        Payment_Medium: '',
+        Payment_Method: ''
     };
 
-    const [newItem, setNewItem] = useState(defaultNewItem);
+    const [newItem, setNewItem] = useState<InputData>(defaultNewItem);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(newItem);
+
+        setData([...data, newItem]);
+
         setNewItem(defaultNewItem);
     };
 
@@ -26,20 +29,20 @@ const NewLine = (): React.ReactElement => {
     return (
         <form onSubmit={handleSubmit}>
             <h2>Add Data:</h2>
-            <input id="merchant" placeholder="Merchant" value={newItem.merchant} onChange={handleChange} type="text" />
-            <input id="country" placeholder="Country" value={newItem.country} onChange={handleChange} type="text" />
-            <input id="city" placeholder="City" value={newItem.city} onChange={handleChange} type="text" />
+            <input id="Merchant" placeholder="Merchant" value={newItem.Merchant} onChange={handleChange} type="text" />
+            <input id="Country" placeholder="Country" value={newItem.Country} onChange={handleChange} type="text" />
+            <input id="City" placeholder="City" value={newItem.City} onChange={handleChange} type="text" />
             <input
-                id="medium"
+                id="Payment_Medium"
                 placeholder="Payment_Medium"
-                value={newItem.medium}
+                value={newItem.Payment_Medium}
                 onChange={handleChange}
                 type="text"
             />
             <input
-                id="method"
+                id="Payment_Method"
                 placeholder="Payment_Method"
-                value={newItem.method}
+                value={newItem.Payment_Method}
                 onChange={handleChange}
                 type="text"
             />
