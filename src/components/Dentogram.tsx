@@ -48,7 +48,7 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
     const drawGraph = () => {
         const width = 1200;
         const height = 800;
-        const radius = width / 2;
+        const radius = Math.min(width, height) / 2;
         const inflection = {
             a: 150,
             b: 150
@@ -63,29 +63,21 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
             .style('border', '2px solid black')
             .style('margin', '10px')
             .append('g')
-            .attr('transform', 'translate(100,0)');
+            .attr('transform', graphType === 'circle' ? `translate(${radius},${radius})` : 'translate(100,0)');
 
         let cluster;
 
-        if (graphType === 'circle') cluster = d3.cluster().size([360, radius - 60]);
+        if (graphType === 'circle') cluster = d3.cluster().size([360, radius - 100]);
         else cluster = d3.cluster().size([height, width - 200]);
 
         const root = d3.hierarchy(graphData, d => d.children);
         cluster(root);
 
         if (graphType === 'circle') {
-            svg.selectAll('g').attr('transform', `translate(${radius},${radius})`);
-
             const linksGenerator = d3
                 .linkRadial()
-                .angle(function (d) {
-                    // @ts-ignore
-                    return (d.x / 180) * Math.PI;
-                })
-                .radius(function (d) {
-                    // @ts-ignore
-                    return d.y;
-                });
+                .angle((d: any) => (d.x / 180) * Math.PI)
+                .radius((d: any) => d.y);
 
             // Add the links between nodes:
             svg.selectAll('path')
@@ -100,15 +92,16 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
             svg.selectAll('g')
                 .data(root.descendants())
                 .join('g')
-                .attr('transform', function (d) {
-                    // @ts-ignore
-                    return `rotate(${d.x - 90}) translate(${d.y})`;
-                })
+                .attr('transform', (d: any) => `rotate(${d.x - 90}) translate(${d.y})`)
                 .append('circle')
-                .attr('r', 7)
-                .style('fill', '#69b3a2')
-                .attr('stroke', 'black')
-                .style('stroke-width', 2);
+                .attr('r', 5)
+                .style('fill', '#6666ff');
+
+            svg.selectAll('text')
+                .data(root.descendants())
+                .join('text')
+                .attr('transform', (d: any) => `rotate(${d.x - 90}) translate(${d.y + 10})`)
+                .text(d => d.data.data?.name);
         } else {
             svg.selectAll('path')
                 .data(root.descendants().slice(1))
@@ -135,8 +128,7 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
                 .join('text')
                 .attr('transform', (d: any) => `translate(${d.y + (d.children ? -10 : 10)},${d.x + 4})`)
                 .style('text-anchor', d => (d.children ? 'end' : 'start'))
-                .text(d => d.data.data?.name)
-                .transition();
+                .text(d => d.data.data?.name);
         }
     };
 
