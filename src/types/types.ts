@@ -21,4 +21,34 @@ export type DataParams = {
 };
 
 export type GraphType = 'simple' | 'rect' | 'circle';
-export type RenderMethod = 'update' | 'rerender';
+export type RenderMethod = 'update' | 'rerender' | 'redraw';
+
+export interface IDebug {
+    rerender: () => void;
+    data: InputData[];
+    graphData: any;
+    levels: TParams;
+    filters: TParams;
+}
+
+export interface IModLevels {
+    levels: TParams;
+    setLevels: React.Dispatch<React.SetStateAction<TParams>>;
+}
+
+export interface IModHidden {
+    hidden: TParams;
+    setHidden: React.Dispatch<React.SetStateAction<TParams>>;
+}
+export interface IGraphTypeMethod {
+    graphType: GraphType;
+    renderMethod: RenderMethod;
+    setGraphType: React.Dispatch<React.SetStateAction<GraphType>>;
+    setRenderMethod: React.Dispatch<React.SetStateAction<RenderMethod>>;
+}
+
+export type TableFormat = {
+    id: string;
+    name: string;
+    parent: string;
+};
