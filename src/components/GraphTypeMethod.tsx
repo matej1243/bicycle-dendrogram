@@ -19,13 +19,13 @@ const GraphTypeMethod = ({
 
             {/* <hr /> */}
 
-            {/* <div className="btns">
+            <div className="btns">
                 <h2>Render Method:</h2>
                 <small>Current: {renderMethod}</small>
                 <br />
                 <button onClick={() => setRenderMethod('rerender')}>Rerender</button>
                 <button onClick={() => setRenderMethod('update')}>Update</button>
-            </div> */}
+            </div>
         </>
     );
 };

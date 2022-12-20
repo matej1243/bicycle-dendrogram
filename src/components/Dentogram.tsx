@@ -45,24 +45,26 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
         setHidden(params);
     }, [data]);
 
-    const width = 1200;
-    const height = 800;
-    const radius = width / 2;
-    const inflection = {
-        a: 150,
-        b: 150
-    };
+    const drawGraph = () => {
+        const width = 1200;
+        const height = 800;
+        const radius = width / 2;
+        const inflection = {
+            a: 150,
+            b: 150
+        };
 
-    const svg = d3
-        .select(dentogramRef.current)
-        .attr('width', width)
-        .attr('height', height)
-        .style('border', '2px solid black')
-        .style('margin', '10px')
-        .append('g')
-        .attr('transform', 'translate(100,0)');
+        d3.selectAll('g').remove();
 
-    useEffect(() => {
+        const svg = d3
+            .select(dentogramRef.current)
+            .attr('width', width)
+            .attr('height', height)
+            .style('border', '2px solid black')
+            .style('margin', '10px')
+            .append('g')
+            .attr('transform', 'translate(100,0)');
+
         let cluster;
 
         if (graphType === 'circle') cluster = d3.cluster().size([360, radius - 60]);
@@ -121,28 +123,36 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
                 .style('fill', 'none')
                 .attr('stroke', '#ccc');
 
-            svg.selectAll('g')
+            svg.selectAll('circle')
                 .data(root.descendants())
-                .join('g')
+                .join('circle')
                 .attr('transform', (d: any) => `translate(${d.y},${d.x})`)
-                .append('circle')
                 .attr('r', 5)
                 .style('fill', '#6666ff');
 
             svg.selectAll('text')
                 .data(root.descendants())
-                .enter()
-                .append('text')
+                .join('text')
                 .attr('transform', (d: any) => `translate(${d.y + (d.children ? -10 : 10)},${d.x + 4})`)
                 .style('text-anchor', d => (d.children ? 'end' : 'start'))
-                .text(d => d.data.data.name);
+                .text(d => d.data.data?.name)
+                .transition();
         }
-    }, [graphData]);
+    };
+
+    useEffect(() => {
+        drawGraph();
+    }, [graphData, tableData, filters, hidden.active, levels.active, graphType]);
+
+    useEffect(() => {
+        const { root, table } = formatData(data, { levels: levels?.active, hidden: hidden?.active, filters });
+        setGraphData(root);
+        setTableData(table);
+    }, [filters, hidden.active, levels.active]);
 
     const rerender = () => {
         if (renderMethod === 'redraw') {
             d3.selectAll('g').remove();
-            svg.remove();
             const { root, table } = formatData(data, { levels: levels?.active, hidden: hidden?.active, filters });
             setGraphData(root);
             setTableData(table);
