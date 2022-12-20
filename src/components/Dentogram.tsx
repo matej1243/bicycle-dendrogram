@@ -103,22 +103,26 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
                 .attr('transform', (d: any) => `rotate(${d.x - 90}) translate(${d.y + 10})`)
                 .text(d => d.data.data?.name);
         } else {
+            const depthMultiplier = width / (graphData.height + 1);
+
             svg.selectAll('path')
                 .data(root.descendants().slice(1))
                 .join('path')
                 .attr('d', (d: any) => {
                     if (graphType === 'simple' && lineUpLevels) {
-                        return `M${d.depth * 200},${d.x}C${d.parent.depth * 200 + inflection.a},${d.x} ${
-                            d.parent.depth * 200 + inflection.b
-                        },${d.parent.x} ${d.parent.depth * 200},${d.parent.x}`;
+                        return `M${d.depth * depthMultiplier},${d.x}C${
+                            d.parent.depth * depthMultiplier + inflection.a
+                        },${d.x} ${d.parent.depth * depthMultiplier + inflection.b},${d.parent.x} ${
+                            d.parent.depth * depthMultiplier
+                        },${d.parent.x}`;
                     } else if (graphType === 'simple' && !lineUpLevels) {
                         return `M${d.y},${d.x}C${d.parent.y + inflection.a},${d.x} ${d.parent.y + inflection.b},${
                             d.parent.x
                         } ${d.parent.y},${d.parent.x}`;
                     } else if (graphType === 'rect' && lineUpLevels) {
-                        return `M${d.parent.depth * 200},${d.parent.x}H${(d.depth * 200) / 1.1}V${d.x}H${
-                            d.depth * 200
-                        }`;
+                        return `M${d.parent.depth * depthMultiplier},${d.parent.x}H${
+                            (d.depth * depthMultiplier) / 1.1
+                        }V${d.x}H${d.depth * depthMultiplier}`;
                     } else {
                         return `M${d.parent.y},${d.parent.x}H${d.y / 1.1}V${d.x}H${d.y}`;
                     }
@@ -130,7 +134,7 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
                 .data(root.descendants())
                 .join('circle')
                 .attr('transform', (d: any) =>
-                    lineUpLevels ? `translate(${d.depth * 200},${d.x})` : `translate(${d.y},${d.x})`
+                    lineUpLevels ? `translate(${d.depth * depthMultiplier},${d.x})` : `translate(${d.y},${d.x})`
                 )
                 .attr('r', 5)
                 .style('fill', '#6666ff');
@@ -140,7 +144,7 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
                 .join('text')
                 .attr('transform', (d: any) =>
                     lineUpLevels
-                        ? `translate(${d.depth * 200 + (d.children ? -10 : 10)},${d.x + 4})`
+                        ? `translate(${d.depth * depthMultiplier + (d.children ? -10 : 10)},${d.x + 4})`
                         : `translate(${d.y + (d.children ? -10 : 10)},${d.x + 4})`
                 )
                 .style('text-anchor', d => (d.children ? 'start' : 'end'))
