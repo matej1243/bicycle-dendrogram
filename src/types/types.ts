@@ -10,14 +10,21 @@ export interface IDedrogram {
     inputData: InputData[];
 }
 
+export interface IFilter {
+    data: InputData[];
+    filters: TFilter[];
+    setFilters: React.Dispatch<React.SetStateAction<TFilter[]>>;
+}
+
 export type TParams = {
     active: string[];
     inactive: string[];
 };
 
 export type DataParams = {
-    filters: string[];
-    levels: string[];
+    filters?: TFilter[];
+    hidden?: string[];
+    levels?: string[];
 };
 
 export type GraphType = 'simple' | 'rect' | 'circle';
@@ -28,7 +35,9 @@ export interface IDebug {
     data: InputData[];
     graphData: any;
     levels: TParams;
-    filters: TParams;
+    hidden: TParams;
+    filters: TFilter[];
+    tableData: any;
 }
 
 export interface IModLevels {
@@ -51,4 +60,12 @@ export type TableFormat = {
     id: string;
     name: string;
     parent: string;
+};
+
+export type TOperator = 'eq' | 'neq';
+
+export type TFilter = {
+    key: string;
+    operator: TOperator;
+    value: string;
 };

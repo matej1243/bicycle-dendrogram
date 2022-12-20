@@ -43,7 +43,7 @@ const NewLine = (): React.ReactElement => {
                 onChange={handleChange}
                 type="text"
             />
-            <button>Submit</button>
+            <button>Add</button>
         </form>
     );
 };

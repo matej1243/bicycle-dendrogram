@@ -3,23 +3,15 @@ import { IModLevels } from '../types/types';
 
 const Levels = ({ levels, setLevels }: IModLevels): React.ReactElement => {
     const selectLevel = (levelName: string) => {
-        const levelIndex = levels.inactive.indexOf(levelName);
-        const inactiveLevels = levels.inactive;
-        inactiveLevels.splice(levelIndex, 1);
-
         setLevels({
             active: [...levels.active, levelName],
-            inactive: inactiveLevels
+            inactive: levels.inactive.filter(level => level !== levelName)
         });
     };
 
     const deselectLevel = (levelName: string) => {
-        const levelIndex = levels.active.indexOf(levelName);
-        const activeLevels = levels.active;
-        activeLevels.splice(levelIndex, 1);
-
         setLevels({
-            active: activeLevels,
+            active: levels.active.filter(level => level !== levelName),
             inactive: [...levels.inactive, levelName]
         });
     };

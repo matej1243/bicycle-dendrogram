@@ -3,23 +3,15 @@ import { IModHidden } from '../types/types';
 
 const Hide = ({ hidden, setHidden }: IModHidden): React.ReactElement => {
     const hide = (hiddenName: string) => {
-        const hiddenIndex = hidden.inactive.indexOf(hiddenName);
-        const inactivehiddens = hidden.inactive;
-        inactivehiddens.splice(hiddenIndex, 1);
-
         setHidden({
             active: [...hidden.active, hiddenName],
-            inactive: inactivehiddens
+            inactive: hidden.inactive.filter(hiddenItem => hiddenItem !== hiddenName)
         });
     };
 
     const show = (hiddenName: string) => {
-        const hiddenIndex = hidden.active.indexOf(hiddenName);
-        const activehiddens = hidden.active;
-        activehiddens.splice(hiddenIndex, 1);
-
         setHidden({
-            active: activehiddens,
+            active: hidden.active.filter(hiddenItem => hiddenItem !== hiddenName),
             inactive: [...hidden.inactive, hiddenName]
         });
     };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { GraphType, IDedrogram, InputData, RenderMethod, TableFormat, TParams } from '../types/types';
+import { GraphType, IDedrogram, InputData, RenderMethod, TFilter, TParams } from '../types/types';
 import * as d3 from 'd3';
 import NewLine from './NewLine';
 import Debug from './Debug';
@@ -7,6 +7,7 @@ import Levels from './Levels';
 import Hide from './Hide';
 import GraphTypeMethod from './GraphTypeMethod';
 import { formatData } from '../utils/utils';
+import Filter from './Filter';
 
 const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
     const dentogramRef = useRef(null);
@@ -14,9 +15,11 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
     const [graphType, setGraphType] = useState<GraphType>('simple');
     const [renderMethod, setRenderMethod] = useState<RenderMethod>('redraw');
     const [data, setData] = useState<InputData[]>([]);
+    const [tableData, setTableData] = useState<any>([]);
     const [graphData, setGraphData] = useState<any>([]);
     const [levels, setLevels] = useState<TParams>({ active: [], inactive: [] });
     const [hidden, setHidden] = useState<TParams>({ active: [], inactive: [] });
+    const [filters, setFilters] = useState<TFilter[]>([]);
 
     useEffect(() => {
         if (!inputData) return;
@@ -27,7 +30,9 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
     useEffect(() => {
         if (!data) return;
 
-        setGraphData(formatData(data, { levels: levels?.active, filters: hidden?.active }));
+        const { root, table } = formatData(data, { levels: levels?.active, hidden: hidden?.active });
+        setGraphData(root);
+        setTableData(table);
 
         if (!data[0]) return;
         const keys = Object.keys(data[0]);
@@ -40,8 +45,8 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
         setHidden(params);
     }, [data]);
 
-    const width = 1400;
-    const height = 1400;
+    const width = 1200;
+    const height = 800;
     const radius = width / 2;
     const inflection = {
         a: 150,
@@ -138,7 +143,9 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
         if (renderMethod === 'redraw') {
             d3.selectAll('g').remove();
             svg.remove();
-            setGraphData(formatData(data, { levels: levels?.active, filters: hidden?.active }));
+            const { root, table } = formatData(data, { levels: levels?.active, hidden: hidden?.active, filters });
+            setGraphData(root);
+            setTableData(table);
         }
     };
 
@@ -154,7 +161,19 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
 
             <hr />
 
-            <Debug data={data} filters={hidden} graphData={graphData} levels={levels} rerender={rerender} />
+            <Filter data={data} filters={filters} setFilters={setFilters} />
+
+            <hr />
+
+            <Debug
+                data={data}
+                hidden={hidden}
+                filters={filters}
+                graphData={graphData}
+                levels={levels}
+                rerender={rerender}
+                tableData={tableData}
+            />
 
             <hr />
 

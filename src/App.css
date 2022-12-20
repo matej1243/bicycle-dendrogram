@@ -16,9 +16,33 @@ input {
     margin-right: 10px;
 }
 
-form button {
+form button,
+.dropdowns button {
     padding: 5px;
     cursor: pointer;
+}
+
+.filter-list-item {
+    background: lightblue;
+    width: fit-content;
+    padding: 5px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.filter-list-item .delete {
+    font-size: 0.5rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.filter-list-item .delete:hover {
+    color: tomato;
+}
+
+select {
+    margin-right: 15px;
+    padding: 5px;
 }
 
 h2 {
