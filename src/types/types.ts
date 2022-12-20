@@ -51,9 +51,9 @@ export interface IModHidden {
 }
 export interface IGraphTypeMethod {
     graphType: GraphType;
-    renderMethod: RenderMethod;
+    lineUpLevels: boolean;
     setGraphType: React.Dispatch<React.SetStateAction<GraphType>>;
-    setRenderMethod: React.Dispatch<React.SetStateAction<RenderMethod>>;
+    setLineUpLevels: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export type TableFormat = {

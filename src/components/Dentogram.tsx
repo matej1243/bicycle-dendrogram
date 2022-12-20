@@ -13,13 +13,13 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
     const dentogramRef = useRef(null);
 
     const [graphType, setGraphType] = useState<GraphType>('simple');
-    const [renderMethod, setRenderMethod] = useState<RenderMethod>('redraw');
     const [data, setData] = useState<InputData[]>([]);
     const [tableData, setTableData] = useState<any>([]);
     const [graphData, setGraphData] = useState<any>([]);
     const [levels, setLevels] = useState<TParams>({ active: [], inactive: [] });
     const [hidden, setHidden] = useState<TParams>({ active: [], inactive: [] });
     const [filters, setFilters] = useState<TFilter[]>([]);
+    const [lineUpLevels, setLineUpLevels] = useState(false);
 
     useEffect(() => {
         if (!inputData) return;
@@ -63,7 +63,7 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
             .style('border', '2px solid black')
             .style('margin', '10px')
             .append('g')
-            .attr('transform', graphType === 'circle' ? `translate(${radius},${radius})` : 'translate(100,0)');
+            .attr('transform', graphType === 'circle' ? `translate(${radius},${radius})` : 'translate(50,0)');
 
         let cluster;
 
@@ -106,35 +106,51 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
             svg.selectAll('path')
                 .data(root.descendants().slice(1))
                 .join('path')
-                .attr('d', (d: any) =>
-                    graphType === 'simple'
-                        ? `M${d.y},${d.x}C${d.parent.y + inflection.a},${d.x} ${d.parent.y + inflection.b},${
-                              d.parent.x
-                          } ${d.parent.y},${d.parent.x}`
-                        : `M${d.parent.y},${d.parent.x}H${d.y / 1.1}V${d.x}H${d.y}`
-                )
+                .attr('d', (d: any) => {
+                    if (graphType === 'simple' && lineUpLevels) {
+                        return `M${d.depth * 200},${d.x}C${d.parent.depth * 200 + inflection.a},${d.x} ${
+                            d.parent.depth * 200 + inflection.b
+                        },${d.parent.x} ${d.parent.depth * 200},${d.parent.x}`;
+                    } else if (graphType === 'simple' && !lineUpLevels) {
+                        return `M${d.y},${d.x}C${d.parent.y + inflection.a},${d.x} ${d.parent.y + inflection.b},${
+                            d.parent.x
+                        } ${d.parent.y},${d.parent.x}`;
+                    } else if (graphType === 'rect' && lineUpLevels) {
+                        return `M${d.parent.depth * 200},${d.parent.x}H${(d.depth * 200) / 1.1}V${d.x}H${
+                            d.depth * 200
+                        }`;
+                    } else {
+                        return `M${d.parent.y},${d.parent.x}H${d.y / 1.1}V${d.x}H${d.y}`;
+                    }
+                })
                 .style('fill', 'none')
                 .attr('stroke', '#ccc');
 
             svg.selectAll('circle')
                 .data(root.descendants())
                 .join('circle')
-                .attr('transform', (d: any) => `translate(${d.y},${d.x})`)
+                .attr('transform', (d: any) =>
+                    lineUpLevels ? `translate(${d.depth * 200},${d.x})` : `translate(${d.y},${d.x})`
+                )
                 .attr('r', 5)
                 .style('fill', '#6666ff');
 
             svg.selectAll('text')
                 .data(root.descendants())
                 .join('text')
-                .attr('transform', (d: any) => `translate(${d.y + (d.children ? -10 : 10)},${d.x + 4})`)
-                .style('text-anchor', d => (d.children ? 'end' : 'start'))
+                .attr('transform', (d: any) =>
+                    lineUpLevels
+                        ? `translate(${d.depth * 200 + (d.children ? -10 : 10)},${d.x + 4})`
+                        : `translate(${d.y + (d.children ? -10 : 10)},${d.x + 4})`
+                )
+                .style('text-anchor', d => (d.children ? 'start' : 'end'))
                 .text(d => d.data.data?.name);
         }
     };
 
     useEffect(() => {
         drawGraph();
-    }, [graphData, tableData, filters, hidden.active, levels.active, graphType]);
+    }, [graphData, tableData, filters, hidden.active, levels.active, graphType, lineUpLevels]);
 
     useEffect(() => {
         const { root, table } = formatData(data, { levels: levels?.active, hidden: hidden?.active, filters });
@@ -143,12 +159,10 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
     }, [filters, hidden.active, levels.active]);
 
     const rerender = () => {
-        if (renderMethod === 'redraw') {
-            d3.selectAll('g').remove();
-            const { root, table } = formatData(data, { levels: levels?.active, hidden: hidden?.active, filters });
-            setGraphData(root);
-            setTableData(table);
-        }
+        d3.selectAll('g').remove();
+        const { root, table } = formatData(data, { levels: levels?.active, hidden: hidden?.active, filters });
+        setGraphData(root);
+        setTableData(table);
     };
 
     return (
@@ -189,9 +203,9 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
 
             <GraphTypeMethod
                 graphType={graphType}
-                renderMethod={renderMethod}
+                lineUpLevels={lineUpLevels}
                 setGraphType={setGraphType}
-                setRenderMethod={setRenderMethod}
+                setLineUpLevels={setLineUpLevels}
             />
         </>
     );

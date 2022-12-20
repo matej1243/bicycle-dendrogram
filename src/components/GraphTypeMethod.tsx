@@ -3,9 +3,9 @@ import { IGraphTypeMethod } from '../types/types';
 
 const GraphTypeMethod = ({
     graphType,
-    renderMethod,
+    lineUpLevels,
     setGraphType,
-    setRenderMethod
+    setLineUpLevels
 }: IGraphTypeMethod): React.ReactElement => {
     return (
         <>
@@ -17,14 +17,18 @@ const GraphTypeMethod = ({
                 <button onClick={() => setGraphType('circle')}>Circular</button>
             </div>
 
-            {/* <hr /> */}
+            <hr />
 
             <div className="btns">
-                <h2>Render Method:</h2>
-                <small>Current: {renderMethod}</small>
-                <br />
-                <button onClick={() => setRenderMethod('rerender')}>Rerender</button>
-                <button onClick={() => setRenderMethod('update')}>Update</button>
+                <h2>Misc:</h2>
+                <input
+                    type="checkbox"
+                    name="lineup"
+                    id="lineup"
+                    checked={lineUpLevels}
+                    onChange={e => setLineUpLevels(e.target.checked)}
+                />
+                <label htmlFor="lineup">Line Up Levels</label>
             </div>
         </>
     );
