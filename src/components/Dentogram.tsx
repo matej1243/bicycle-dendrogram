@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { GraphType, IDedrogram, InputData, RenderMethod, TFilter, TParams } from '../types/types';
+import { GraphType, IDedrogram, InputData, TFilter, TParams } from '../types/types';
 import * as d3 from 'd3';
 import NewLine from './NewLine';
 import Debug from './Debug';
@@ -20,6 +20,8 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
     const [hidden, setHidden] = useState<TParams>({ active: [], inactive: [] });
     const [filters, setFilters] = useState<TFilter[]>([]);
     const [lineUpLevels, setLineUpLevels] = useState(false);
+    const [showColumnNames, setShowColumnNames] = useState(false);
+    const [showColumnLines, setShowColumnLines] = useState(false);
 
     useEffect(() => {
         if (!inputData) return;
@@ -44,6 +46,12 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
         setLevels(params);
         setHidden(params);
     }, [data]);
+
+    useEffect(() => {
+        if (lineUpLevels) return;
+        setShowColumnNames(false);
+        setShowColumnLines(false);
+    }, [lineUpLevels]);
 
     const drawGraph = () => {
         const width = 1200;
@@ -79,7 +87,6 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
                 .angle((d: any) => (d.x / 180) * Math.PI)
                 .radius((d: any) => d.y);
 
-            // Add the links between nodes:
             svg.selectAll('path')
                 .data(root.links())
                 .join('path')
@@ -88,7 +95,6 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
                 .style('fill', 'none')
                 .attr('stroke', '#ccc');
 
-            // Add a circle for each node.
             svg.selectAll('g')
                 .data(root.descendants())
                 .join('g')
@@ -103,7 +109,8 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
                 .attr('transform', (d: any) => `rotate(${d.x - 90}) translate(${d.y + 10})`)
                 .text(d => d.data.data?.name);
         } else {
-            const depthMultiplier = width / (graphData.height + 1);
+            const graphHeight = graphData.height + 1;
+            const depthMultiplier = width / graphHeight;
 
             svg.selectAll('path')
                 .data(root.descendants().slice(1))
@@ -144,17 +151,45 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
                 .join('text')
                 .attr('transform', (d: any) =>
                     lineUpLevels
-                        ? `translate(${d.depth * depthMultiplier + (d.children ? -10 : 10)},${d.x + 4})`
-                        : `translate(${d.y + (d.children ? -10 : 10)},${d.x + 4})`
+                        ? `translate(${d.depth * depthMultiplier + (d.children ? 10 : -10)},${d.x + 4})`
+                        : `translate(${d.y + (d.children ? 10 : -10)},${d.x + 4})`
                 )
                 .style('text-anchor', d => (d.children ? 'start' : 'end'))
                 .text(d => d.data.data?.name);
+
+            if (showColumnLines && graphHeight) {
+                svg.selectAll('g')
+                    .data(Array.from(Array(graphHeight).keys()))
+                    .join('path')
+                    .attr('d', (d: any) => `M${d * depthMultiplier - depthMultiplier / 2},0V${height}`)
+                    .attr('stroke', 'gray')
+                    .attr('stroke-width', 2);
+            }
+
+            if (showColumnNames && hidden.inactive) {
+                svg.selectAll('g')
+                    .data(hidden.inactive)
+                    .join('text')
+                    .text(d => d)
+                    .attr('x', (d, index) => index * depthMultiplier * 0.96)
+                    .attr('y', '20');
+            }
         }
     };
 
     useEffect(() => {
         drawGraph();
-    }, [graphData, tableData, filters, hidden.active, levels.active, graphType, lineUpLevels]);
+    }, [
+        graphData,
+        tableData,
+        filters,
+        hidden.active,
+        levels.active,
+        graphType,
+        lineUpLevels,
+        showColumnLines,
+        showColumnNames
+    ]);
 
     useEffect(() => {
         const { root, table } = formatData(data, { levels: levels?.active, hidden: hidden?.active, filters });
@@ -208,8 +243,12 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
             <GraphTypeMethod
                 graphType={graphType}
                 lineUpLevels={lineUpLevels}
+                showColumnLines={showColumnLines}
+                showColumnNames={showColumnNames}
                 setGraphType={setGraphType}
                 setLineUpLevels={setLineUpLevels}
+                setShowColumnLines={setShowColumnLines}
+                setShowColumnNames={setShowColumnNames}
             />
         </>
     );

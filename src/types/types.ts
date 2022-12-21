@@ -28,7 +28,6 @@ export type DataParams = {
 };
 
 export type GraphType = 'simple' | 'rect' | 'circle';
-export type RenderMethod = 'update' | 'rerender' | 'redraw';
 
 export interface IDebug {
     rerender: () => void;
@@ -52,8 +51,12 @@ export interface IModHidden {
 export interface IGraphTypeMethod {
     graphType: GraphType;
     lineUpLevels: boolean;
+    showColumnNames: boolean;
+    showColumnLines: boolean;
     setGraphType: React.Dispatch<React.SetStateAction<GraphType>>;
     setLineUpLevels: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowColumnNames: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowColumnLines: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export type TableFormat = {
