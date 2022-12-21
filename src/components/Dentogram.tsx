@@ -111,6 +111,7 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
         } else {
             const graphHeight = graphData.height + 1;
             const depthMultiplier = width / graphHeight;
+            const hasRootNode = tableData[0]?.id === 'root';
 
             svg.selectAll('path')
                 .data(root.descendants().slice(1))
@@ -171,7 +172,7 @@ const Dendrogram = ({ inputData }: IDedrogram): React.ReactElement => {
                     .data(hidden.inactive)
                     .join('text')
                     .text(d => d)
-                    .attr('x', (d, index) => index * depthMultiplier * 0.96)
+                    .attr('x', (d, index) => (index + (hasRootNode ? 1 : 0)) * depthMultiplier)
                     .attr('y', '20');
             }
         }
